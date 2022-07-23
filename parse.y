@@ -15,18 +15,24 @@ void yyerror (Node **n, char *);
 
 %union {
 	char *string;
+	argumentarr *argumentarr;
 	Node *node;
 }
 
 %token <string> WORD
 %type <node> line
+%type <argumentarr> args
 
 %%
 
 line: 
-    %empty { $$ = mkNode("");}
-    | line WORD RUN NL { $$ = mkNode($2);*n=$$; YYACCEPT;}
+    %empty { $$ = NULL;}
+    | line args WORD RUN NL { $$ = new_node($3,$2);*n=$$; YYACCEPT;}
     ;
+
+args:
+    %empty {$$ = NULL;}
+    | args WORD {$$ = add_arg($$,$2);}
 ;
 
 %%
@@ -43,7 +49,7 @@ Node *parse_line(FILE *src) {
 }
 
 void yyerror(Node **n, char *s) {
-	printf("\nError: %s\n",s);
+	//printf("\nError: %s\n",s);
 }
 
 #include "lex.yy.c"

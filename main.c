@@ -33,22 +33,32 @@ char *which(char *cmd, char *PATH[], int pathlen) {
 	return NULL;
 }
 
+int run_builtin(Node *n) {
+	if (strcmp(n->cmd,"which") == 0) {
+		puts("whiching");
+		return 0;
+	}
+	return 1;
+}
+
 int run_cmd(Node *n, int *exit_status, char *PATH[], int pathlen) {
 	int r = fork();
 	if (r < 0) {
 		perror("fork :(");
 	} else if (r == 0) {
 		//child
-		char *full_cmd=which(n->cmd,PATH,pathlen);
-		if (full_cmd == NULL) {
-			return E_NOCMD;
-		}
-		int res = execl(full_cmd,full_cmd,NULL);
-		if (res == -1) {
-			return E_NOCMD;
-		} else {
-			puts("unreachable main.c");
-			//program should have exited by now
+		if (run_builtin(n) != 0) {
+			char *full_cmd=which(n->cmd,PATH,pathlen);
+			if (full_cmd == NULL) {
+				return E_NOCMD;
+			}
+			int res = execl(full_cmd,full_cmd,NULL);
+			if (res == -1) {
+				return E_NOCMD;
+			} else {
+				puts("unreachable main.c");
+				//program should have exited by now
+			}
 		}
 	} else {
 		//parent
@@ -68,6 +78,10 @@ int main(int argc, char **argv) {
 
 	while (true) {
 		Node *n = parse_line(src);
+
+		if (n == NULL) {
+			fprintf(stderr,"invalid command");
+		}
 
 		//async function, can't access exit_status until child exits;
 		int exit_status;
