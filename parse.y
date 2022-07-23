@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 int yylex (void);
-void yyerror (char *);
 typedef struct Node {
 	char *cmd;
 } Node;
+void yyerror (Node **n, char *);
 
 Node *mkNode(char *string) {
 	Node *n = calloc(1,sizeof(Node));
@@ -18,6 +18,7 @@ Node *parse_tree = NULL;
 %}
 
 %token VAR RUN QUOTE LITERAL IN OUT PIPE NL
+%parse-param {Node **n}
 
 
 %union {
@@ -32,7 +33,7 @@ Node *parse_tree = NULL;
 
 line: 
     %empty { $$ = mkNode("");}
-    | line WORD RUN NL { $$ = mkNode($2);parse_tree=$$; YYACCEPT;}
+    | line WORD RUN NL { $$ = mkNode($2);*n=$$; YYACCEPT;}
     ;
 ;
 
@@ -45,11 +46,12 @@ int main( int argc, char **argv) {
 	else
 		yyin = stdin;
 	//yylex();
-	yyparse();
-	printf("%s\n",parse_tree->cmd);
+	Node *n;
+	yyparse(&n);
+	printf("%s\n",n->cmd);
 }
 
-void yyerror(char *s) {
+void yyerror(Node **n, char *s) {
 	printf("\nError: %s\n",s);
 }
 
