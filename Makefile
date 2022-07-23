@@ -1,6 +1,6 @@
 all:
 	bison -H parse.y
 	flex c.l
-	gcc parse.tab.c
+	gcc -ggdb parse.tab.c main.c parsetree.c
 clean:
 	-rm *.yy.c *.tab.h *.tab.c a.out
