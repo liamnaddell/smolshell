@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int yylex (void);
 typedef struct Node {
@@ -48,7 +49,7 @@ int main( int argc, char **argv) {
 	//yylex();
 	Node *n;
 	yyparse(&n);
-	printf("%s\n",n->cmd);
+	execl(n->cmd,NULL);
 }
 
 void yyerror(Node **n, char *s) {
