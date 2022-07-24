@@ -13,11 +13,48 @@ Node *new_node(char *string, argumentarr *arr) {
 	return n;
 }
 
-argumentarr *add_arg(argumentarr *oldarr,char *n) {
-	if (oldarr == NULL) {
-		argumentarr *newarr = (argumentarr*) calloc(strlen(n)*1,sizeof(char));
-		return newarr;
+Args *add_arg(Args *a,char *n) {
+	Args *b = (Args *)calloc(1,sizeof(Args));
+	b->arg=n;
+	if (b == NULL) {
+		perror("calloc :(");
+		exit(1);
 	}
-	return NULL;
+	if (a == NULL) {
+		return b;
+	} else {
+		Args *cur = a;
+		while (cur->next != NULL) {
+			cur=cur->next;
+		}
+		cur->next = b;
+		return a;
+	}
 
+}
+
+unsigned argsize(Args *a) {
+	int i=0;
+	while (a != NULL) {
+		a=a->next;
+		i++;
+	}
+	return i;
+}
+
+argumentarr *to_argarray(char *cmd, Args *a) {
+	unsigned size = argsize(a);
+	//we need 2 extra pointers, one for NULL, one for cmd
+	//make sure to dup cmd to avoid double free
+	
+	argumentarr *args = (argumentarr *) calloc(size+2,sizeof(char *));
+	(*args)[0] = strdup(cmd);
+
+	int i;
+	for (i = 1; i < size+1; i++) {
+		(*args)[i]=a->arg;
+		a=a->next;
+	}
+	(*args)[i] = NULL;
+	return args;
 }

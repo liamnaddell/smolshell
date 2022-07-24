@@ -5,7 +5,7 @@
 %}
 %%
 $[a-zA-Z0-9]+  { return VAR; }
-[a-zA-Z0-9/]+ { yylval.string=strdup(yytext);return WORD; }
+[a-zA-Z0-9/-]+ { yylval.string=strdup(yytext);return WORD; }
 [$] { return RUN; }
 [\"] { return QUOTE; }
 [\'] { return LITERAL; }

@@ -52,7 +52,7 @@ int run_cmd(Node *n, int *exit_status, char *PATH[], int pathlen) {
 			if (full_cmd == NULL) {
 				return E_NOCMD;
 			}
-			int res = execl(full_cmd,full_cmd,NULL);
+			int res = execv(full_cmd,*(n->args));
 			if (res == -1) {
 				return E_NOCMD;
 			} else {

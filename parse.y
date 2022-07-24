@@ -15,19 +15,19 @@ void yyerror (Node **n, char *);
 
 %union {
 	char *string;
-	argumentarr *argumentarr;
 	Node *node;
+	Args *args;
 }
 
 %token <string> WORD
 %type <node> line
-%type <argumentarr> args
+%type <args> args
 
 %%
 
 line: 
     %empty { $$ = NULL;}
-    | line args WORD RUN NL { $$ = new_node($3,$2);*n=$$; YYACCEPT;}
+    | line args WORD RUN NL { $$ = new_node($3,to_argarray($3,$2));*n=$$; YYACCEPT;}
     ;
 
 args:
